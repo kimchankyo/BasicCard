@@ -18,37 +18,52 @@ What this class abstraction does NOT do:
   i.e. Ace can be valued as both 1 and 14 in a standard 52-card deck
 """
 
+class CardVariation:
+  """
+  Card Variation Should Have All Informtion Required To Create Card
+  """
+  def __init__(self) -> None:
+    pass
 
-class CardType:
-  CUSTOM = -1
-  STANDARD_52 = 0
-  TAROT = 1
-  HANAFUDA = 2
+class Standard52(CardVariation):
+  def __init__(self) -> None:
+      super().__init__()
 
-class CardValue:
-  pass
-
-class CardRank:
-  pass
 
 class ValueHierarchy:
   pass
-
 
 class RankHierarchy:
   pass
 
 
-class BasicCard:
+
+class Card:
   """
   Ideally, this class is accessed using the Deck class. 
   However, for particular cases individual cards can be initialized
   """
-  def __init__(self, name: str = "", value: CardValue = "", ) -> None:
+  def __init__(self, name: str = "" ) -> None:
     self._name = ""
     self._value = 0
     self._rank = 0
     self._image = 0
+
+  """
+  Card should be able to:
+  - self evaluate with other cards
+  - print its value + rank
+  - print its image
+  - add cutomized printing scheme
+
+  Set functions
+  - name
+  - value
+  - rank
+  - image
+  - value hierarchy
+  - rank hierarchy
+  """
 
 
 
@@ -80,3 +95,7 @@ class Deck:
     Reinitializes the deck to default
     """
     pass
+
+
+  if __name__ == "__main__":
+    print(PredefinedCardValues.STANFARD_52)
