@@ -1,28 +1,37 @@
 """
-Ideal Abstraction Class for defining basic card objects
-for arbitrary card games. Class comes pre-initialized
-with traditional card decks (such as standard 52-cards, tarots, etc)
-but also has the option for defining custom cards
+A simple abstraction class for defining basic playing card objects
+for arbitrary card games. Class comes pre-initialized with traditional 
+playing card archetypes (such as Standard-52, Tarot, Hanfuda, etc.)
+Class allows abstraction for defining custom playing card variants.
 
-Features of Basic Card Include
+Playing Card Object Features:
 - Card Value
 - Card Rank
 - Card Image
-- Card Name
-- Card Value Ranking (Comparing with Other Cards)
-- Card Suit Ranking
-- Card Suit vs Value Ranking (Priority)
+- Card Custom/Pre-Defined Name
+- Card Value Hierarchy
+- Card Rank Hierarchy
+- Card Hierarchy Priority (Value vs. Rank)
 
 What this class abstraction does NOT do:
 - Advanced rulesets that are specific to paricular gameplay:
   i.e. Ace can be valued as both 1 and 14 in a standard 52-card deck
-"""
 
-"""
-Documentation
--------------
-- How to create preset Cards
-- How to create custom Cards
+                              Examples
+--------------------------------------------------------------------
+TODO: Example of Creating Pre-set Cards
+TODO: Example of Creating Custom Cards
+
+TODO: Create Out-of-shelf Function To Create Custom Card Variations
+lib
+| _ CustomCardVariation
+    | _ CustomCardProperties.csv
+    | _ CustomCardValue.csv
+    | _ CustomCardRank.csv
+    | _ CustomCardImages
+        | _ CustomCardImage1.png
+        | _ ...
+
 """
 
 from typing import Dict, List, Tuple
@@ -383,9 +392,3 @@ class Deck:
     existing CardVariation definition and randomInit settings.
     """
     self.__init__(self._cardVariation, self._randomInit)
-
-if __name__ == "__main__":
-  # card = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
-  # card2 = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
-  deck = Deck(STANDARD_52)
-  # print(deck.search(card))
