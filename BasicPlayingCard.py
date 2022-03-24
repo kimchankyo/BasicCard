@@ -92,8 +92,8 @@ class Card:
     self._name = name
     self._value = value
     self._rank = rank
-    self._image = None
     self._cardVariation = cardVariation
+    self._image = None  # TODO: Add Card Image Functionality
 
     if self._name is None:
       self._name = cardVariation.NAME_SCHEME.format(VALUE=value, RANK=rank)
@@ -122,10 +122,44 @@ class Card:
     return self._image
   
   def getCardVariation(self) -> CardVariation:
+    """
+    Class Function: getCardVariation
+    --------------------------------
+    Description:
+    Returns the CardVariation definition scheme used by this Card object.
+
+    Returns:
+      - cardVariation (CardVariation): CardVariation definition schema
+    """
     return self._cardVariation
 
 class Deck:
+  """
+  Class: Deck
+  -----------
+  Description:
+  Simple abstraction class of a deck of playing cards. Individual playing
+  Card objects are defined by the CardVariation class. Simple Deck 
+  functionality includes the following
+    - Randomly shuffling the deck of Card objects
+    - Reinitializing the deck
+    - Checking the number of Card objects remaining in the deck
+    - Drawing a specifed number of Card objects from the deck
+    - Search for a specific Card object in the deck
+  """
+
   def __init__(self, cardVariation: CardVariation, randomInit: bool = True) -> None:
+    """
+    Class Dunder Function: __init__
+    -------------------------------
+    Description:
+    Initializes Deck object with Card objects specified by CardVariation
+    definition.
+
+    Parameters:
+      - cardVariation (CardVariation): Specified definition for Card objects
+      - randomInit (bool): Boolean setting to randomly initialize deck
+    """
     self._deck = [Card(cardVariation, getattr(cardVariation.VALUES, cardValue), getattr(cardVariation.RANKS, cardRank))
                   for cardValue in dir(cardVariation.VALUES) if re.search(ATTRIBUTE_SEARCH_KEY, cardValue) is not None
                   for cardRank in dir(cardVariation.RANKS) if re.search(ATTRIBUTE_SEARCH_KEY, cardRank) is not None]
@@ -136,24 +170,77 @@ class Deck:
       random.shuffle(self._deck)
 
   def __str__(self) -> str:
+    """
+    Class Dunder Function: __str__
+    ------------------------------
+    Description:
+    Constructs string representation of Deck object. String representation
+    includes number of Card objects remaining in the deck and the specific
+    order of Card objects in the deck.
+
+    Returns:
+      - string (str): String representation of Deck object.
+    """
     string = "Number of Cards In Deck: " + str(self._length) + "\nOrder:\n"
     for i in range(self._length):
       string += str(self._deck[i]) + "\n"
     return string
   
   def __len__(self) -> int:
+    """
+    Class Dunder Function: __len__
+    ------------------------------
+    Description:
+    Returns current number of cards in the deck.
+
+    Returns:
+      - length (int): Number of Card objects remaining in deck
+    """
     return self._length
   
   def getDeckSize(self) -> int:
+    """
+    Class Function: getDeckSize
+    ---------------------------
+    Description:
+    Returns current number of cards in the deck.
+
+    Returns:
+      - length (int): Number of Card objects remaining in deck
+    """
     return self._length
 
   def setRandomInit(self, randomInit: bool) -> None:
+    """
+    Class Function: setRandomInit
+    -----------------------------
+    Description:
+    Sets the initialization setting for randomly shuffling
+    the newly generated Deck. If randomInit is True, the next
+    reinitialization of the deck (See Function reset) will be 
+    randomly shuffled. If randomInit is False, the next 
+    reinitialization will not be randomly shuffled (not recommended).
+
+    Parameters:
+      - randomInit (bool): Boolean setting to randomly initialize deck
+    """
     self._randomInit = randomInit
 
   def search(self, searchCard: Card) -> int:
     """
-    Finds specified card in the deck
-    If found, return index in deck, -1 otherwise
+    Class Function: search
+    ----------------------
+    Description:
+    Searches through the existing cards in the deck for a
+    specified Card object. If found, the index of the Card
+    in the deck is returned. Otherwise, -1 is returned.
+
+    Parameters:
+      - searchCard (Card): Target search Card object
+    
+    Returns:
+      - default (int): Index of specified Card object in deck.
+                       Returns -1 if not found in deck
     """
     for i in range(self._length):
       if searchCard == self._deck[i]:
@@ -162,8 +249,21 @@ class Deck:
 
   def draw(self, numCards: int = 1) -> Tuple[bool, List[Card]]:
     """
-    Draws the number of cards specified
-    returns true if drawn, false otherwise
+    Class Function: draw
+    --------------------
+    Description:
+    Draws cards from the deck. Number of cards drawn is
+    specified by numCards (default 1) parameter. Returns
+    tuple of default boolean variable and list of drawn Card
+    objects. Default boolean returns true if specified number
+    of cards were successfully drawn.
+
+    Parameters:
+      - numCards (int): Number of Card objects to draw from deck
+    
+    Returns:
+      - default (bool): True if successful, False otherwise
+      - drawnCards (List[Card]): List of drawn Card objects
     """
     drawnCards = []
     if self._length >= numCards:
@@ -174,24 +274,26 @@ class Deck:
 
   def shuffle(self) -> None:
     """
-    Shuffles current remaining cards
+    Class Function: shuffle
+    -----------------------
+    Description:
+    Shuffles the current deck if at least 1 card exists.
     """
     if self._length > 0:
       random.shuffle(self._deck)
 
-  def reset(self):
+  def reset(self) -> None:
     """
-    Reinitializes the deck to default
+    Class Function: reset
+    ---------------------
+    Description:
+    Reinitializes the deck to default. Reinitialization uses
+    existing CardVariation definition and randomInit settings.
     """
     self.__init__(self._cardVariation, self._randomInit)
-
 
 if __name__ == "__main__":
   # card = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
   # card2 = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
   deck = Deck(STANDARD_52)
-  ret, cards = deck.draw()
-  print(deck)
-  deck.setRandomInit(False)
-  deck.reset()
-  print(deck)
+  # print(deck.search(card))
