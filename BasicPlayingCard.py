@@ -78,47 +78,139 @@ STANDARD_52 = CardVariation(STANDARD_52_VALUES, STANDARD_52_RANKS,
 
 class Card:
   """
-  Ideally, this class is accessed using the Deck class. 
-  However, for particular cases individual cards can be initialized
+  Class: Card
+  -----------
+  Description:
+  Simple abstraction class of a playing card. Individual playing Card
+  is defined by the CardVariation schema class. Simple individual Card
+  functionality includes the following
+    - Follows custom string representation and printing scheme
+    - Self identifies same value and rank definition with other Card objects
+    - TODO: Self evaluates value and rank with other cards
+    - TODO: Contains individual image of card face
 
-  Card should be able to:
-  - self evaluate with other cards
-  - print its value + rank
-  - print its image
-  - add cutomized printing scheme
+  This class is ideally accessed using the Deck class but can be used directly
+  to initialize specific Card representations.
   """
+
   def __init__(self, cardVariation: CardVariation,
                      value: str, rank: str, name: str = None) -> None:
+    """
+    Class Dunder Function: __init__
+    -------------------------------
+    Description:
+    Initializes Card object specified by CardVariation scheme and specific
+    card value and rank. Custom name can be set for individual card 
+    initializations.
+
+    Parameters:
+      - cardVariation (CardVariation): Specified definition for Card objects
+      - value (str): Value of Card object
+      - rank (str): Rank of Card object
+      - name (str): (Optional) Custom name for Card object
+    """
     self._name = name
     self._value = value
     self._rank = rank
     self._cardVariation = cardVariation
     self._image = None  # TODO: Add Card Image Functionality
 
+    # Default to CardVariation name scheme if custom name not provided
     if self._name is None:
       self._name = cardVariation.NAME_SCHEME.format(VALUE=value, RANK=rank)
 
   def __str__(self) -> str:
+    """
+    Class Dunder Function: __str__
+    ------------------------------
+    Description:
+    Constructs string representation of Card object. 
+
+    Returns:
+      - name (str): String representation of Card object.
+    """
     return self._name
 
   def __eq__(self, __o: object) -> bool:
+    """
+    Class Dunder Function: __eq__
+    -----------------------------
+    Description:
+    Determines whether specified Card object have same value or rank as
+    this Card representation. If specified object is not a Card, an assertion
+    error is thrown.
+
+    Returns:
+      - default (bool): True if Card object is equivalent to this Card 
+                        representation, False otherwise
+    """
     assert(type(__o) is Card)
     return self._value == __o._value and self._rank == __o._rank
 
   def __ne__(self, __o: object) -> bool:
+    """
+    Class Dunder Function: __ne__
+    -----------------------------
+    Description:
+    Determines whether specified Card object does not have same value or rank
+    as this Card representation. If specified object is not a Card, an assertion
+    error is thrown.
+
+    Returns:
+      - default (bool): True if Card object is not equivalent to this Card 
+                        representation, False otherwise
+    """
     assert(type(__o) is Card)
     return self._value != __o._value or self._rank != __o._rank
 
   def getValue(self) -> str:
+    """
+    Class Function: getValue
+    ------------------------
+    Description:
+    Returns value of Card object.
+
+    Returns:
+      - value (str): Value of Card
+    """
     return self._value
 
   def getRank(self) -> str:
+    """
+    Class Function: getRank
+    -----------------------
+    Description:
+    Returns rank category of Card object.
+
+    Returns:
+      - rank (str): Rank of Card
+    """
     return self._rank
 
   def getName(self) -> str:
+    """
+    Class Function: getName
+    -----------------------
+    Description:
+    Returns name of Card. Name is initialized according to naming scheme
+    defined in CardVariation.
+
+    Returns:
+      - name (str): Name of Card
+    """
     return self._name
 
   def getImage(self):
+    """
+    Class Function: getImage
+    ------------------------
+    Description:
+    Returns the image associated with this Card object
+    TODO: Implement image feature of Card schema
+
+    Returns:
+      - image (None): Image of Card object
+    """
     return self._image
   
   def getCardVariation(self) -> CardVariation:
@@ -126,7 +218,7 @@ class Card:
     Class Function: getCardVariation
     --------------------------------
     Description:
-    Returns the CardVariation definition scheme used by this Card object.
+    Returns the CardVariation definition scheme used by this Card object
 
     Returns:
       - cardVariation (CardVariation): CardVariation definition schema
