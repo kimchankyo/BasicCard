@@ -25,12 +25,19 @@ Documentation
 - How to create custom Cards
 """
 
-from typing import Dict
+from typing import Dict, List, Tuple
+import re
+import random
 
 PRIORITY_VALUE = "PRI_VALU"
 PRIORITY_RANK = "PRI_RANK"
 PRIORITY_NEUTRAL = "PRI_NEUT"
-DEFAULT_NAME_SCHEME = "\{VALUE\} OF \{RANK\}"
+
+SUBSTITUTION_VALUE = "{VALUE}"
+SUBSTITUTION_RANK = "{RANK}"
+DEFAULT_NAME_SCHEME = SUBSTITUTION_VALUE + " OF " + SUBSTITUTION_RANK
+
+ATTRIBUTE_SEARCH_KEY = r"^[A-Z]*.*[A-Z]$"
 
 # Card Rank Ordered By Alphabetical Lowest To Highest
 STANDARD_52_VALUES = {"ACE": "A", "TWO": "2", "THREE": "3", "FOUR": "4",
@@ -43,7 +50,7 @@ STANDARD_52_VALUE_HIERARCHY = {"ACE": 13, "TWO": 1, "THREE": 2, "FOUR": 3,
                                "NINE": 8, "TEN": 9, "JACK": 10, "QUEEN": 11, "KING": 12}
 STANDARD_52_RANK_HIERARCHY = {"SPADES": 4, "CLUBS": 1, 
                               "HEARTS": 3, "DIAMONDS": 2}
-STANDARD_52_NAME_SCHEME = "\{VALUE\}\{RANK\}"
+STANDARD_52_NAME_SCHEME = SUBSTITUTION_VALUE + SUBSTITUTION_RANK
 
 class CardVariation:
   """
@@ -66,7 +73,8 @@ class CardVariation:
     for rankHierKey in rankHierarchy.keys(): setattr(self.RANK_HIERARCHY, rankHierKey, rankHierarchy[rankHierKey])
 
 STANDARD_52 = CardVariation(STANDARD_52_VALUES, STANDARD_52_RANKS,
-                            STANDARD_52_VALUE_HIERARCHY, STANDARD_52_RANK_HIERARCHY)
+                            STANDARD_52_VALUE_HIERARCHY, STANDARD_52_RANK_HIERARCHY,
+                            nameScheme=STANDARD_52_NAME_SCHEME)
 
 class Card:
   """
@@ -78,57 +86,112 @@ class Card:
   - print its value + rank
   - print its image
   - add cutomized printing scheme
-
-  Set functions
-  - name
-  - value
-  - rank
-  - image
-  - value hierarchy
-  - rank hierarchy
   """
-  def __init__(self, value: str, rank: str, name: str = None) -> None:
+  def __init__(self, cardVariation: CardVariation,
+                     value: str, rank: str, name: str = None) -> None:
     self._name = name
     self._value = value
     self._rank = rank
+    self._image = None
+    self._cardVariation = cardVariation
 
-  def __repr__(self) -> str:
     if self._name is None:
-      return self._value + " OF " + self._rank
-    else:
-      return self._name
+      self._name = cardVariation.NAME_SCHEME.format(VALUE=value, RANK=rank)
+
+  def __str__(self) -> str:
+    return self._name
+
+  def __eq__(self, __o: object) -> bool:
+    assert(type(__o) is Card)
+    return self._value == __o._value and self._rank == __o._rank
+
+  def __ne__(self, __o: object) -> bool:
+    assert(type(__o) is Card)
+    return self._value != __o._value or self._rank != __o._rank
+
+  def getValue(self) -> str:
+    return self._value
+
+  def getRank(self) -> str:
+    return self._rank
+
+  def getName(self) -> str:
+    return self._name
+
+  def getImage(self):
+    return self._image
+  
+  def getCardVariation(self) -> CardVariation:
+    return self._cardVariation
 
 class Deck:
+  def __init__(self, cardVariation: CardVariation, randomInit: bool = True) -> None:
+    self._deck = [Card(cardVariation, getattr(cardVariation.VALUES, cardValue), getattr(cardVariation.RANKS, cardRank))
+                  for cardValue in dir(cardVariation.VALUES) if re.search(ATTRIBUTE_SEARCH_KEY, cardValue) is not None
+                  for cardRank in dir(cardVariation.RANKS) if re.search(ATTRIBUTE_SEARCH_KEY, cardRank) is not None]
+    self._length = len(self._deck)
+    self._cardVariation = cardVariation
+    self._randomInit = randomInit
+    if self._randomInit:
+      random.shuffle(self._deck)
 
-  def __init__(self) -> None:
-    pass
+  def __str__(self) -> str:
+    string = "Number of Cards In Deck: " + str(self._length) + "\nOrder:\n"
+    for i in range(self._length):
+      string += str(self._deck[i]) + "\n"
+    return string
+  
+  def __len__(self) -> int:
+    return self._length
+  
+  def getDeckSize(self) -> int:
+    return self._length
 
-  def search(self):
+  def setRandomInit(self, randomInit: bool) -> None:
+    self._randomInit = randomInit
+
+  def search(self, searchCard: Card) -> int:
     """
     Finds specified card in the deck
+    If found, return index in deck, -1 otherwise
     """
-    pass
+    for i in range(self._length):
+      if searchCard == self._deck[i]:
+        return i
+    return -1
 
-  def draw(self, numCards: int = 1):
+  def draw(self, numCards: int = 1) -> Tuple[bool, List[Card]]:
     """
     Draws the number of cards specified
+    returns true if drawn, false otherwise
     """
-    pass
+    drawnCards = []
+    if self._length >= numCards:
+      self._length -= numCards
+      for i in range(numCards):
+        drawnCards.append(self._deck.pop())
+    return len(drawnCards) > 0, drawnCards
 
-  def shuffle(self):
+  def shuffle(self) -> None:
     """
     Shuffles current remaining cards
     """
-    pass
+    if self._length > 0:
+      random.shuffle(self._deck)
 
   def reset(self):
     """
     Reinitializes the deck to default
     """
-    pass
+    self.__init__(self._cardVariation, self._randomInit)
 
 
-  if __name__ == "__main__":
-    name = STANDARD_52.VALUES.ACE + STANDARD_52.RANKS.SPADES
-    card = Card(STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
-    print(card)
+if __name__ == "__main__":
+  # card = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
+  # card2 = Card(STANDARD_52, STANDARD_52.VALUES.ACE, STANDARD_52.RANKS.SPADES)
+  deck = Deck(STANDARD_52)
+  ret, cards = deck.draw()
+  print(deck)
+  deck.setRandomInit(False)
+  deck.reset()
+  print(deck)
